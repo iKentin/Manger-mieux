@@ -24,12 +24,16 @@ main{max-width:720px;margin:auto;padding:16px;display:grid;gap:16px}.card{backgr
 @media(min-width:600px){main{padding:22px}.modal-backdrop{align-items:center}.modal{border-radius:24px}.food-list{grid-template-columns:1fr 1fr}}
 
 .calendar-head{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;margin:10px 0 14px}.calendar-head h3{text-align:center;margin:0;font-size:18px}.calendar-head button{padding:8px;font-size:24px;line-height:1}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) 42px;gap:5px}.calendar-weekday{text-align:center;font-size:11px;color:var(--muted);padding:5px 0}.calendar-day,.calendar-week{min-width:0;min-height:48px;padding:5px 2px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;font-weight:600}.calendar-day.outside{opacity:.38;background:#f5f6f4}.calendar-day.selected{background:#1677df;color:#fff;border-color:#1677df}.calendar-day .dot{font-size:10px;line-height:10px;color:#229d50}.calendar-day .dot.none{color:#a5aaa7}.calendar-day .dot.mid{color:#f29b18}.calendar-day .dot.over{color:#e33b35}.calendar-week{background:#f0f5f1;color:var(--green);font-size:14px}.calendar-week.selected{background:#dcecff;border-color:#1677df;color:#145ca8}.calendar-legend{margin-top:12px;line-height:1.8}.calendar-legend:first-letter{color:#229d50}
+.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}@media(max-width:360px){.goal-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><div class="logo">🥗</div><div><h1>Manger mieux</h1><p>Compose tes plats. Maîtrise tes apports.</p></div></div>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+    <div class="brand"><div class="logo">🥗</div><div><h1>Manger mieux</h1><p>Compose tes plats. Maîtrise tes apports.</p></div></div>
+    <button id="openGoals" class="secondary" style="background:#285443;color:#fff;border:1px solid #4a6f5e;padding:9px 11px;white-space:nowrap">🎯 Objectifs</button>
+  </div>
 </header>
 <main>
   <section id="view-compose" class="view">
@@ -40,6 +44,7 @@ main{max-width:720px;margin:auto;padding:16px;display:grid;gap:16px}.card{backgr
       <div class="summary" style="margin-top:14px">
         <div class="muted">Valeurs nutritionnelles par portion</div><div class="big-kcal"><span id="perKcal">0</span> <span style="font-size:15px;letter-spacing:0">kcal / portion</span></div>
         <div class="nutri"><div><strong id="perP">0</strong><span>Protéines g</span></div><div><strong id="perC">0</strong><span>Glucides g</span></div><div><strong id="perF">0</strong><span>Lipides g</span></div><div><strong id="perFiber">0</strong><span>Fibres g</span></div></div>
+        <div id="balanceAssessment" style="margin-top:12px;padding:11px 12px;border-radius:12px;background:#285443;color:#fff;font-size:13px"><strong id="balanceTitle">Équilibre du plat</strong><p id="balanceText" style="margin:4px 0 0;color:#d7e9c7">Ajoute des ingrédients pour obtenir une appréciation nutritionnelle.</p></div>
       </div>
       <div class="row" style="margin-top:12px"><button id="saveRecipe" class="grow">♡ Enregistrer la plat</button><button id="clearDish" class="secondary">Vider</button></div>
     </div>
@@ -99,6 +104,7 @@ main{max-width:720px;margin:auto;padding:16px;display:grid;gap:16px}.card{backgr
 <nav class="tabs"><div class="tabbar"><button class="active" data-tab="compose"><span>🍲</span>Composer</button><button data-tab="diary"><span>🗓️</span>Journal</button><button data-tab="scan"><span>▦</span>Scanner</button><button data-tab="recipes"><span aria-hidden="true" style="display:flex;justify-content:center;align-items:center;height:24px;margin-bottom:2px"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v6M4.5 3v4.5A2.5 2.5 0 0 0 7 10a2.5 2.5 0 0 0 2.5-2.5V3M7 10v11M16 3v18M16 3c3 2 3 7 0 9"/></svg></span>Plats</button><button data-tab="foods"><span>🥕</span>Aliments</button></div></nav>
 <div id="updateBanner" class="hidden" role="status" aria-live="polite"><p><strong>Mise à jour disponible</strong><br>Une nouvelle version de Manger mieux est prête.</p><button id="applyUpdate">Actualiser</button><button id="dismissUpdate" class="dismiss" aria-label="Plus tard">Plus tard</button></div>
 <div id="modalHost"></div>
+<div id="goalModalHost"></div>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const $=s=>document.querySelector(s);
@@ -123,7 +129,34 @@ function n(v){const x=Number(v);return Number.isFinite(x)&&x>0?x:0}
 function fmt(v){return (Math.round((v||0)*10)/10).toLocaleString('fr-FR')}
 function totals(list=ingredients){return list.reduce((a,i)=>{const q=n(i.grams)/100,f=i.food; a.kcal+=n(f.kcal)*q;a.p+=n(f.p)*q;a.c+=n(f.c)*q;a.f+=n(f.f)*q;a.fiber+=n(f.fiber)*q;return a},{kcal:0,p:0,c:0,f:0,fiber:0})}
 function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function renderTotals(){const t=totals(),port=Math.max(1,n($('#portions').value)||1);$('#perKcal').textContent=Math.round(t.kcal/port).toLocaleString('fr-FR');$('#perP').textContent=fmt(t.p/port);$('#perC').textContent=fmt(t.c/port);$('#perF').textContent=fmt(t.f/port);$('#perFiber').textContent=fmt(t.fiber/port);$('#ingredientCount').textContent=`${ingredients.length} ingrédient${ingredients.length>1?'s':''}`}
+function renderTotals(){
+ const t=totals(),port=Math.max(1,n($('#portions').value)||1);
+ const kcal=t.kcal/port,p=t.p/port,c=t.c/port,f=t.f/port,fiber=t.fiber/port;
+ $('#perKcal').textContent=Math.round(kcal).toLocaleString('fr-FR');
+ $('#perP').textContent=fmt(p);$('#perC').textContent=fmt(c);$('#perF').textContent=fmt(f);$('#perFiber').textContent=fmt(fiber);
+ $('#ingredientCount').textContent=`${ingredients.length} ingrédient${ingredients.length>1?'s':''}`;
+ const box=$('#balanceAssessment'),title=$('#balanceTitle'),txt=$('#balanceText');
+ if(box&&title&&txt){
+   box.style.background='#285443';
+   if(!ingredients.length){title.textContent='Équilibre du plat';txt.textContent='Ajoute des ingrédients pour obtenir une appréciation nutritionnelle.'}
+   else{
+     const notes=[];
+     if(p<15)notes.push('apport en protéines plutôt faible');
+     else if(p>=25)notes.push('bon apport en protéines');
+     if(fiber<5)notes.push('peu de fibres');
+     else if(fiber>=8)notes.push('bon apport en fibres');
+     if(f<5)notes.push('peu de lipides');
+     else if(f>30)notes.push('plat assez riche en lipides');
+     if(c<15)notes.push('peu de glucides');
+     const score=(p>=15?1:0)+(fiber>=5?1:0)+(f>=5&&f<=30?1:0)+(c>=15?1:0);
+     if(score>=3){title.textContent='Plutôt équilibré';}
+     else if(score===2){title.textContent='Équilibre à améliorer';}
+     else{title.textContent='À compléter';}
+     txt.textContent=notes.length?notes.join(' · ')+'. Appréciation indicative par portion, selon les valeurs saisies.':'Les apports sont présents, mais l’équilibre dépend aussi des ingrédients et de l’accompagnement.';
+     if(score<=1)box.style.background='#805b19';
+   }
+ }
+}
 function renderIngredients(){const el=$('#ingredients');if(!ingredients.length){el.innerHTML='<div class="empty">Ajoute un aliment ou scanne un produit pour commencer.</div>';renderTotals();return}el.innerHTML=ingredients.map((i,idx)=>`<div class="ingredient"><div class="info"><h3>${safe(i.food.name)}</h3><p>${Math.round(n(i.food.kcal)*n(i.grams)/100)} kcal · P ${fmt(n(i.food.p)*n(i.grams)/100)} g · G ${fmt(n(i.food.c)*n(i.grams)/100)} g</p><p>${safe(i.food.source||'Base personnelle')}</p></div><input class="field qty" aria-label="Quantité en grammes" type="number" min="0" step="1" value="${i.grams}" data-qty="${idx}"><span class="muted">g</span><button class="ghost danger" data-remove="${idx}" aria-label="Supprimer">✕</button></div>`).join('');renderTotals()}
 function foodCard(f){return `<div class="food"><div class="info"><h3>${safe(f.name)}</h3><p>${safe(f.brand||f.category||'Aliment')} · ${fmt(f.kcal)} kcal / 100 g</p><p>P ${fmt(f.p)} g · G ${fmt(f.c)} g · L ${fmt(f.f)} g</p></div><button data-add="${safe(f.id)}">＋</button></div>`}
 function renderSearchResults(list){$('#searchResults').innerHTML=list.length?list.map(foodCard).join(''):'<div class="empty">Aucun aliment trouvé. Essaie un autre nom ou crée ton aliment.</div>'}
@@ -172,6 +205,18 @@ async function stopScanner(){if(scanner){try{if(scanner.isScanning)await scanner
 $('#newFoodBtn').onclick=()=>openFoodModal();
 function openFoodModal(food=null){const f=food||{name:'',kcal:0,p:0,c:0,f:0,fiber:0,category:'Personnalisé',source:'Saisie personnelle',brand:'',id:'custom-'+Date.now()};$('#modalHost').innerHTML=`<div class="modal-backdrop" id="backdrop"><div class="modal"><div class="modal-top"><h2>${food?'Modifier un aliment':'Créer un aliment'}</h2><button class="secondary" id="closeModal">Fermer</button></div><p class="muted">Toutes les valeurs sont exprimées pour 100 g. Tu peux recopier l’étiquette.</p><label>Nom de l’aliment</label><input class="field" id="mfName" value="${safe(f.name)}" placeholder="Ex. : Yaourt nature"><div class="form-grid" style="margin-top:12px"><div><label>Calories (kcal)</label><input class="field" id="mfKcal" type="number" min="0" value="${f.kcal}"></div><div><label>Protéines (g)</label><input class="field" id="mfP" type="number" min="0" step=".1" value="${f.p}"></div><div><label>Glucides (g)</label><input class="field" id="mfC" type="number" min="0" step=".1" value="${f.c}"></div><div><label>Lipides (g)</label><input class="field" id="mfF" type="number" min="0" step=".1" value="${f.f}"></div><div><label>Fibres (g)</label><input class="field" id="mfFiber" type="number" min="0" step=".1" value="${f.fiber||0}"></div><div><label>Marque (facultatif)</label><input class="field" id="mfBrand" value="${safe(f.brand||'')}" placeholder="Marque"></div></div><button id="saveFoodModal" style="width:100%;margin-top:16px">Enregistrer l’aliment</button></div></div>`;
 $('#closeModal').onclick=()=>$('#modalHost').innerHTML='';$('#backdrop').addEventListener('click',e=>{if(e.target.id==='backdrop')$('#modalHost').innerHTML=''});$('#saveFoodModal').onclick=()=>{const name=$('#mfName').value.trim();if(!name){alert('Donne un nom à cet aliment.');return}const nf={...f,name,kcal:n($('#mfKcal').value),p:n($('#mfP').value),c:n($('#mfC').value),f:n($('#mfF').value),fiber:n($('#mfFiber').value),brand:$('#mfBrand').value.trim(),source:'Saisie personnelle'};const old=foods.findIndex(x=>x.id===f.id);if(old>=0)foods[old]=nf;else foods.unshift(nf);ingredients=ingredients.map(i=>i.food.id===nf.id?{...i,food:nf}:i);persist();renderIngredients();renderMyFoods();$('#modalHost').innerHTML='';$('#searchResults').innerHTML=foods.slice(0,8).map(foodCard).join('')}}
+
+const DEFAULT_GOALS={p:0,c:0,f:0,fiber:0};
+function getGoals(){try{return {...DEFAULT_GOALS,...JSON.parse(localStorage.getItem('mm_goals')||'{}')}}catch{return {...DEFAULT_GOALS}}}
+function saveGoals(g){localStorage.setItem('mm_goals',JSON.stringify(g))}
+function openGoalsModal(){
+ const g=getGoals();
+ $('#goalModalHost').innerHTML=`<div class="modal-backdrop" id="goalBackdrop"><div class="modal"><div class="modal-top"><h2>🎯 Mes objectifs nutritionnels</h2><button class="secondary" id="closeGoals">Fermer</button></div><p class="muted">Saisis tes cibles quotidiennes en grammes.</p><div class="goal-grid"><div><label for="goalP">Protéines (g / jour)</label><input class="field" id="goalP" type="number" min="0" step="1" value="${g.p||''}" placeholder="Ex. 140"></div><div><label for="goalC">Glucides (g / jour)</label><input class="field" id="goalC" type="number" min="0" step="1" value="${g.c||''}" placeholder="Ex. 220"></div><div><label for="goalF">Lipides (g / jour)</label><input class="field" id="goalF" type="number" min="0" step="1" value="${g.f||''}" placeholder="Ex. 70"></div><div><label for="goalFiber">Fibres (g / jour)</label><input class="field" id="goalFiber" type="number" min="0" step="1" value="${g.fiber||''}" placeholder="Ex. 30"></div></div><button id="saveGoals" style="width:100%;margin-top:16px">Enregistrer les objectifs</button></div></div>`;
+ $('#closeGoals').onclick=()=>$('#goalModalHost').innerHTML='';
+ $('#goalBackdrop').addEventListener('click',e=>{if(e.target.id==='goalBackdrop')$('#goalModalHost').innerHTML=''});
+ $('#saveGoals').onclick=()=>{const read=id=>Math.max(0,Number($('#'+id).value)||0);saveGoals({p:read('goalP'),c:read('goalC'),f:read('goalF'),fiber:read('goalFiber')});$('#goalModalHost').innerHTML='';alert('Objectifs nutritionnels enregistrés sur cet appareil.')};
+}
+const goalsButton=$('#openGoals');if(goalsButton)goalsButton.addEventListener('click',openGoalsModal);
 renderIngredients();renderSearchResults(foods.slice(0,8));renderRecipes();renderMyFoods();renderDiary();
 // Mise à jour PWA : propose un bouton avant d'activer la nouvelle version.
 let waitingWorker=null, reloadAfterUpdate=false;
