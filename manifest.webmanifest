@@ -1,0 +1,14 @@
+{
+  "name": "Manger mieux",
+  "short_name": "Manger mieux",
+  "description": "Compose tes plats et calcule les valeurs nutritionnelles.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f7f2",
+  "theme_color": "#173e32",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

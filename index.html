@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173e32">
+<meta name="description" content="Compose tes plats et calcule leurs valeurs nutritionnelles avec Manger mieux.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Manger mieux</title>
+<style>
+:root{--green:#173e32;--green2:#285443;--mint:#d7e9c7;--bg:#f5f7f2;--card:#fff;--ink:#17251f;--muted:#66736c;--line:#e0e7df;--accent:#39765a;--danger:#a33b35;--radius:20px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:13px;padding:12px 15px;background:var(--green);color:white;font-weight:650}button.secondary{background:#edf2eb;color:var(--green);border:1px solid var(--line)}button.ghost{background:transparent;color:var(--muted);padding:7px 9px}button.danger{background:#fff0ee;color:var(--danger)}button:disabled{opacity:.5;cursor:not-allowed}
+header{background:var(--green);color:white;padding:calc(18px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 26px 26px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;background:var(--mint);color:var(--green);border-radius:15px;display:grid;place-items:center;font-size:27px}.brand h1{margin:0;font-size:23px;letter-spacing:-.5px}.brand p{margin:2px 0 0;color:#d7e9c7;font-size:13px}
+.header-actions{display:flex;gap:8px;margin-top:18px}.header-actions button{flex:1;background:var(--green2);border:1px solid #4a6f5e}
+main{max-width:720px;margin:auto;padding:16px;display:grid;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:0 3px 14px #1a33250a}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}.section-title h2{font-size:18px;margin:0;letter-spacing:-.25px}.muted{color:var(--muted);font-size:13px}.field{width:100%;border:1px solid #d6dfd5;border-radius:12px;padding:12px 13px;background:#fff;color:var(--ink);outline-color:var(--accent)}label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}.row{display:flex;gap:9px;align-items:center}.row>*{min-width:0}.row .grow{flex:1}.search-row input{flex:1;min-width:0}.pill{display:inline-flex;border-radius:999px;padding:5px 9px;background:#edf3eb;color:#315a43;font-size:12px;font-weight:650}.nutri{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.nutri div{background:#f3f6f1;border-radius:13px;padding:10px 7px;text-align:center}.nutri strong{display:block;font-size:18px}.nutri span{font-size:11px;color:var(--muted)}
+.big-kcal{font-size:33px;font-weight:800;letter-spacing:-1px}.summary{background:var(--green);color:white;border-radius:17px;padding:16px}.summary .muted{color:#d7e9c7}.summary .nutri div{background:#285443}.summary .nutri span{color:#d7e9c7}.summary .nutri strong{color:white}
+.food-list,.ingredient-list,.recipe-list{display:grid;gap:9px;margin-top:12px}.food,.ingredient,.recipe{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:10px;align-items:center}.food .info,.ingredient .info,.recipe .info{flex:1;min-width:0}.food h3,.ingredient h3,.recipe h3{margin:0;font-size:14px;font-weight:700}.food p,.ingredient p,.recipe p{margin:3px 0 0;color:var(--muted);font-size:12px}.food button{padding:9px 12px}.qty{width:76px;text-align:center;padding:9px 4px}.empty{padding:18px;text-align:center;color:var(--muted);font-size:14px;border:1px dashed #cbd7cb;border-radius:14px}
+.tabs{position:fixed;bottom:0;left:0;right:0;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#ffffffed;backdrop-filter:blur(15px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5}.tabbar{display:flex;gap:6px;width:min(720px,100%)}.tabbar button{flex:1;background:transparent;color:var(--muted);padding:9px 3px;font-size:11px}.tabbar button.active{background:#edf3eb;color:var(--green)}.tabbar span{display:block;font-size:20px;margin-bottom:2px}
+.hidden{display:none!important}.scanner-box{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:12px;background:#101b16}.scanner-box #reader{width:100%;min-height:80px}.scanner-box video{width:100%!important;border-radius:12px}.status{padding:10px 12px;background:#f3f6f1;border-radius:12px;font-size:13px;color:var(--muted);margin-top:10px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modal-backdrop{position:fixed;inset:0;background:#10201888;z-index:10;display:flex;align-items:flex-end;justify-content:center}.modal{background:var(--bg);width:min(720px,100%);max-height:88dvh;overflow:auto;border-radius:24px 24px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom))}.modal h2{margin:0 0 14px}.modal-top{display:flex;align-items:center;justify-content:space-between}.modal-top button{padding:8px 12px}.small{font-size:12px}.footer-note{font-size:11px;color:var(--muted);text-align:center;padding:5px 10px 12px}
+@media(min-width:600px){main{padding:22px}.modal-backdrop{align-items:center}.modal{border-radius:24px}.food-list{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">🥗</div><div><h1>Manger mieux</h1><p>Compose tes plats. Maîtrise tes apports.</p></div></div>
+  <div class="header-actions"><button id="scanTop">▦ Scanner un produit</button><button id="newFoodTop">＋ Créer un aliment</button></div>
+</header>
+<main>
+  <section id="view-compose" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Mon plat</h2><span class="pill">Composition</span></div>
+      <input id="dishName" class="field" value="Ma nouvelle recette" aria-label="Nom du plat" placeholder="Nom du plat">
+      <div class="row" style="margin-top:10px"><div class="grow"><label for="portions">Nombre de portions</label><input id="portions" class="field" type="number" min="1" max="99" value="1"></div><div class="grow"><label for="dishWeight">Poids final (facultatif, g)</label><input id="dishWeight" class="field" type="number" min="0" placeholder="Après cuisson"></div></div>
+      <div class="summary" style="margin-top:14px">
+        <div class="muted">Total de la recette</div><div class="big-kcal"><span id="totalKcal">0</span> <span style="font-size:15px;letter-spacing:0">kcal</span></div>
+        <div class="nutri"><div><strong id="totalP">0</strong><span>Protéines g</span></div><div><strong id="totalC">0</strong><span>Glucides g</span></div><div><strong id="totalF">0</strong><span>Lipides g</span></div><div><strong id="totalFiber">0</strong><span>Fibres g</span></div></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button id="saveRecipe" class="grow">♡ Enregistrer la recette</button><button id="clearDish" class="secondary">Vider</button></div>
+      <p class="muted" id="perServing" style="margin-bottom:0">Par portion : 0 kcal</p>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>Ingrédients du plat</h2><span class="pill" id="ingredientCount">0 ingrédient</span></div>
+      <div id="ingredients" class="ingredient-list"><div class="empty">Ajoute un aliment ou scanne un produit pour commencer.</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>Ajouter un aliment</h2></div>
+      <div class="row search-row"><input id="foodSearch" class="field" placeholder="Rechercher un aliment…" aria-label="Rechercher un aliment"><button id="searchBtn">Chercher</button></div>
+      <p class="muted">Recherche locale, puis Open Food Facts si besoin.</p>
+      <div id="searchResults" class="food-list"></div>
+    </div>
+  </section>
+  <section id="view-scan" class="view hidden">
+    <div class="card">
+      <div class="section-title"><h2>Scanner un code-barres</h2><span class="pill">Caméra</span></div>
+      <p class="muted">Autorise l’accès à la caméra. Le scan fonctionne sur une page HTTPS ou en local sur certains navigateurs. Si la caméra ne démarre pas, saisis le code manuellement.</p>
+      <button id="startScan" style="width:100%">▦ Activer la caméra</button>
+      <div id="scannerWrap" class="scanner-box hidden"><div id="reader"></div></div>
+      <div id="scanStatus" class="status">Prêt à scanner.</div>
+      <div style="margin-top:15px"><label for="barcodeInput">Ou saisir le code-barres</label><div class="row"><input id="barcodeInput" class="field grow" inputmode="numeric" placeholder="Ex. 3017620422003"><button id="lookupBarcode">Rechercher</button></div></div>
+      <div id="barcodeResult" style="margin-top:12px"></div>
+    </div>
+  </section>
+  <section id="view-recipes" class="view hidden">
+    <div class="card"><div class="section-title"><h2>Mes recettes</h2><span class="pill" id="recipeCount">0 recette</span></div><div id="recipes" class="recipe-list"><div class="empty">Tes recettes enregistrées apparaîtront ici.</div></div></div>
+  </section>
+  <section id="view-foods" class="view hidden">
+    <div class="card"><div class="section-title"><h2>Mes aliments</h2><button id="newFoodBtn" class="secondary">＋ Ajouter</button></div><p class="muted">Les aliments créés ou modifiés sont conservés sur cet appareil.</p><div id="myFoods" class="food-list"></div></div>
+  </section>
+  <div class="footer-note">Valeurs nutritionnelles indicatives. Vérifie toujours l’étiquette du produit.</div>
+</main>
+<nav class="tabs"><div class="tabbar"><button class="active" data-tab="compose"><span>🍲</span>Composer</button><button data-tab="scan"><span>▦</span>Scanner</button><button data-tab="recipes"><span>♡</span>Recettes</button><button data-tab="foods"><span>🥕</span>Aliments</button></div></nav>
+<div id="modalHost"></div>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const baseFoods=[
+{id:'ciq-poulet',name:'Blanc de poulet cru',brand:'Aliment courant',kcal:120,p:23,c:0,f:2,fiber:0,category:'Viandes',source:'Valeur indicative',unit:'g'},
+{id:'ciq-riz',name:'Riz blanc sec',brand:'Aliment courant',kcal:356,p:7,c:78,f:1,fiber:1,category:'Féculents',source:'Valeur indicative',unit:'g'},
+{id:'ciq-pates',name:'Pâtes sèches',brand:'Aliment courant',kcal:350,p:12,c:70,f:2,fiber:3,category:'Féculents',source:'Valeur indicative',unit:'g'},
+{id:'ciq-haricots',name:'Haricots verts cuits',brand:'Aliment courant',kcal:31,p:1.8,c:4.5,f:.2,fiber:3.2,category:'Légumes',source:'Valeur indicative',unit:'g'},
+{id:'ciq-oeuf',name:'Œuf entier',brand:'Aliment courant',kcal:145,p:13,c:1,f:10,fiber:0,category:'Protéines',source:'Valeur indicative',unit:'g'},
+{id:'ciq-huile',name:'Huile d’olive',brand:'Aliment courant',kcal:884,p:0,c:0,f:100,fiber:0,category:'Matières grasses',source:'Valeur indicative',unit:'g'},
+{id:'ciq-steak',name:'Steak haché 5 % cru',brand:'Aliment courant',kcal:129,p:21,c:0,f:5,fiber:0,category:'Viandes',source:'Valeur indicative',unit:'g'},
+{id:'ciq-lentilles',name:'Lentilles cuites',brand:'Aliment courant',kcal:116,p:9,c:12,f:.4,fiber:8,category:'Légumineuses',source:'Valeur indicative',unit:'g'},
+{id:'ciq-pomme',name:'Pomme',brand:'Aliment courant',kcal:52,p:.3,c:11.4,f:.2,fiber:2.4,category:'Fruits',source:'Valeur indicative',unit:'g'},
+{id:'ciq-fromage-blanc',name:'Fromage blanc nature 0 %',brand:'Aliment courant',kcal:47,p:8,c:4,f:.2,fiber:0,category:'Produits laitiers',source:'Valeur indicative',unit:'g'},
+{id:'ciq-banane',name:'Banane',brand:'Aliment courant',kcal:89,p:1.1,c:22.8,f:.3,fiber:2.6,category:'Fruits',source:'Valeur indicative',unit:'g'},
+{id:'ciq-thon',name:'Thon au naturel égoutté',brand:'Aliment courant',kcal:116,p:26,c:0,f:1,fiber:0,category:'Poissons',source:'Valeur indicative',unit:'g'}
+];
+let foods=load('mm_foods',baseFoods), ingredients=load('mm_ingredients',[]), recipes=load('mm_recipes',[]), currentTab='compose', scanner=null;
+function load(k,fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fallback}catch{return fallback}}
+function persist(){localStorage.setItem('mm_foods',JSON.stringify(foods));localStorage.setItem('mm_ingredients',JSON.stringify(ingredients));localStorage.setItem('mm_recipes',JSON.stringify(recipes))}
+function n(v){const x=Number(v);return Number.isFinite(x)&&x>0?x:0}
+function fmt(v){return (Math.round((v||0)*10)/10).toLocaleString('fr-FR')}
+function totals(list=ingredients){return list.reduce((a,i)=>{const q=n(i.grams)/100,f=i.food; a.kcal+=n(f.kcal)*q;a.p+=n(f.p)*q;a.c+=n(f.c)*q;a.f+=n(f.f)*q;a.fiber+=n(f.fiber)*q;return a},{kcal:0,p:0,c:0,f:0,fiber:0})}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderTotals(){const t=totals(),port=Math.max(1,n($('#portions').value)||1);$('#totalKcal').textContent=Math.round(t.kcal).toLocaleString('fr-FR');$('#totalP').textContent=fmt(t.p);$('#totalC').textContent=fmt(t.c);$('#totalF').textContent=fmt(t.f);$('#totalFiber').textContent=fmt(t.fiber);$('#perServing').textContent=`Par portion : ${Math.round(t.kcal/port)} kcal · P ${fmt(t.p/port)} g · G ${fmt(t.c/port)} g · L ${fmt(t.f/port)} g`;$('#ingredientCount').textContent=`${ingredients.length} ingrédient${ingredients.length>1?'s':''}`}
+function renderIngredients(){const el=$('#ingredients');if(!ingredients.length){el.innerHTML='<div class="empty">Ajoute un aliment ou scanne un produit pour commencer.</div>';renderTotals();return}el.innerHTML=ingredients.map((i,idx)=>`<div class="ingredient"><div class="info"><h3>${safe(i.food.name)}</h3><p>${Math.round(n(i.food.kcal)*n(i.grams)/100)} kcal · P ${fmt(n(i.food.p)*n(i.grams)/100)} g · G ${fmt(n(i.food.c)*n(i.grams)/100)} g</p><p>${safe(i.food.source||'Base personnelle')}</p></div><input class="field qty" aria-label="Quantité en grammes" type="number" min="0" step="1" value="${i.grams}" data-qty="${idx}"><span class="muted">g</span><button class="ghost danger" data-remove="${idx}" aria-label="Supprimer">✕</button></div>`).join('');renderTotals()}
+function foodCard(f){return `<div class="food"><div class="info"><h3>${safe(f.name)}</h3><p>${safe(f.brand||f.category||'Aliment')} · ${fmt(f.kcal)} kcal / 100 g</p><p>P ${fmt(f.p)} g · G ${fmt(f.c)} g · L ${fmt(f.f)} g</p></div><button data-add="${safe(f.id)}">＋</button></div>`}
+function renderSearchResults(list){$('#searchResults').innerHTML=list.length?list.map(foodCard).join(''):'<div class="empty">Aucun aliment trouvé. Essaie un autre nom ou crée ton aliment.</div>'}
+function addFood(food,grams=100){ingredients.push({food:structuredClone(food),grams:Number(grams)||100});persist();renderIngredients();$('#scanStatus').textContent=`Ajouté au plat : ${food.name}`;$('#barcodeResult').innerHTML=''}
+function renderRecipes(){const el=$('#recipes');$('#recipeCount').textContent=`${recipes.length} recette${recipes.length>1?'s':''}`;el.innerHTML=recipes.length?recipes.map((r,i)=>`<div class="recipe"><div class="info"><h3>${safe(r.name)}</h3><p>${Math.round(r.totals.kcal)} kcal · ${r.portions} portion(s) · ${r.items.length} ingrédients</p><p>P ${fmt(r.totals.p)} g · G ${fmt(r.totals.c)} g · L ${fmt(r.totals.f)} g par recette</p></div><button class="secondary" data-load-recipe="${i}">Ouvrir</button><button class="ghost danger" data-delete-recipe="${i}">✕</button></div>`).join(''):'<div class="empty">Tes recettes enregistrées apparaîtront ici.</div>'}
+function renderMyFoods(){const el=$('#myFoods');el.innerHTML=foods.map(f=>`<div class="food"><div class="info"><h3>${safe(f.name)}</h3><p>${fmt(f.kcal)} kcal · P ${fmt(f.p)} g · G ${fmt(f.c)} g · L ${fmt(f.f)} g / 100 g</p><p>${safe(f.source||'Aliment personnalisé')}</p></div><button class="secondary" data-edit-food="${safe(f.id)}">Modifier</button></div>`).join('')}
+function showTab(tab){currentTab=tab;document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));$('#view-'+tab).classList.remove('hidden');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='recipes')renderRecipes();if(tab==='foods')renderMyFoods();if(tab==='scan')stopScanner()}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+$('#dishName').addEventListener('input',()=>{});$('#portions').addEventListener('input',renderTotals);
+$('#searchBtn').onclick=async()=>{const q=$('#foodSearch').value.trim();if(!q){renderSearchResults(foods.slice(0,8));return}const local=foods.filter(f=>f.name.toLowerCase().includes(q.toLowerCase())||(f.brand||'').toLowerCase().includes(q.toLowerCase()));renderSearchResults(local);if(local.length<3){try{const r=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=10&fields=code,product_name,brands,nutriments`);const d=await r.json();const remote=(d.products||[]).filter(p=>p.product_name&&p.nutriments).map(productFromOFF).filter(Boolean);window.lastRemoteFoods=remote;const merged=[...local,...remote.filter(x=>!foods.some(f=>f.id===x.id))];renderSearchResults(merged.slice(0,15))}catch{if(!local.length)$('#searchResults').innerHTML='<div class="empty">Recherche en ligne indisponible. Vérifie ta connexion.</div>'}}};
+$('#foodSearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('#searchBtn').click()});
+document.addEventListener('click',e=>{const add=e.target.closest('[data-add]');if(add){const f=foods.find(x=>x.id===add.dataset.add);if(f)addFood(f);else if(window.lastRemoteFoods){const rf=window.lastRemoteFoods.find(x=>x.id===add.dataset.add);if(rf){foods.push(rf);persist();addFood(rf)}}}
+const rem=e.target.closest('[data-remove]');if(rem){ingredients.splice(+rem.dataset.remove,1);persist();renderIngredients()}
+const loadBtn=e.target.closest('[data-load-recipe]');if(loadBtn){const r=recipes[+loadBtn.dataset.loadRecipe];ingredients=structuredClone(r.items);$('#dishName').value=r.name;$('#portions').value=r.portions;persist();renderIngredients();showTab('compose')}
+const del=e.target.closest('[data-delete-recipe]');if(del){recipes.splice(+del.dataset.deleteRecipe,1);persist();renderRecipes()}
+const edit=e.target.closest('[data-edit-food]');if(edit){const f=foods.find(x=>x.id===edit.dataset.editFood);if(f)openFoodModal(f)}
+});
+document.addEventListener('input',e=>{if(e.target.matches('[data-qty]')){ingredients[+e.target.dataset.qty].grams=n(e.target.value);persist();renderTotals()}});
+$('#saveRecipe').onclick=()=>{if(!ingredients.length){alert('Ajoute au moins un ingrédient avant d’enregistrer.');return}const r={id:'recipe-'+Date.now(),name:$('#dishName').value.trim()||'Ma recette',portions:Math.max(1,n($('#portions').value)||1),items:structuredClone(ingredients),totals:totals()};recipes.unshift(r);persist();renderRecipes();$('#saveRecipe').textContent='✓ Recette enregistrée';setTimeout(()=>$('#saveRecipe').textContent='♡ Enregistrer la recette',1600)};
+$('#clearDish').onclick=()=>{if(confirm('Vider les ingrédients du plat ?')){ingredients=[];persist();renderIngredients()}};
+function productFromOFF(p){const x=p.nutriments||{},code=String(p.code||'');if(!p.product_name)return null;return {id:'off-'+code,name:p.product_name,brand:p.brands||'Produit emballé',kcal:numOr(x['energy-kcal_100g'],(x['energy-kj_100g']||0)/4.184),p:numOr(x.proteins_100g,0),c:numOr(x.carbohydrates_100g,0),f:numOr(x.fat_100g,0),fiber:numOr(x.fiber_100g,0),category:'Produits emballés',source:'Open Food Facts',barcode:code,unit:'g'}}
+function numOr(a,b){return Number.isFinite(Number(a))&&a!==''?Number(a):Number(b)||0}
+async function lookupBarcode(code){code=code.trim();if(!/^[0-9]{8,14}$/.test(code)){setStatus('Saisis un code-barres valide (8 à 14 chiffres).');return}$('#barcodeResult').innerHTML='<div class="status">Recherche du produit…</div>';try{const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=code,product_name,brands,nutriments`);const d=await r.json();if(d.status!==1||!d.product){$('#barcodeResult').innerHTML='<div class="empty">Produit introuvable. Tu peux le créer manuellement avec les valeurs de l’étiquette.</div>';return}const f=productFromOFF({...d.product,code});if(!f){$('#barcodeResult').innerHTML='<div class="empty">Le produit existe mais ses informations nutritionnelles sont insuffisantes.</div>';return}window.lastRemoteFoods=[f];$('#barcodeResult').innerHTML=`<div class="food"><div class="info"><h3>${safe(f.name)}</h3><p>${safe(f.brand)} · ${Math.round(f.kcal)} kcal / 100 g</p><p>P ${fmt(f.p)} g · G ${fmt(f.c)} g · L ${fmt(f.f)} g</p><p class="muted">Source : Open Food Facts. Vérifie les données avec l’emballage.</p></div><button id="addScanned">Ajouter</button></div><button class="secondary" id="editScanned" style="width:100%;margin-top:8px">Vérifier / modifier les valeurs</button>`;$('#addScanned').onclick=()=>{foods=foods.filter(x=>x.id!==f.id);foods.unshift(f);persist();addFood(f);showTab('compose')};$('#editScanned').onclick=()=>openFoodModal(f)}catch(err){$('#barcodeResult').innerHTML='<div class="empty">Impossible de joindre Open Food Facts. Vérifie ta connexion ou réessaie.</div>'}}
+function setStatus(t){$('#scanStatus').textContent=t}
+$('#lookupBarcode').onclick=()=>lookupBarcode($('#barcodeInput').value);$('#barcodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')lookupBarcode($('#barcodeInput').value)});
+$('#scanTop').onclick=()=>{showTab('scan');startScanner()};$('#startScan').onclick=startScanner;
+async function startScanner(){if(!window.isSecureContext){setStatus('La caméra exige une page HTTPS (ou localhost). Tu peux saisir le code manuellement.');return}if(!window.Html5Qrcode){setStatus('Le module de scan n’a pas pu charger. Saisis le code-barres manuellement.');return}$('#scannerWrap').classList.remove('hidden');try{if(!scanner)scanner=new Html5Qrcode('reader');const cams=await Html5Qrcode.getCameras();if(!cams.length)throw new Error('Aucune caméra détectée');const cam=cams.find(c=>/back|rear|environment|arrière/i.test(c.label))||cams[cams.length-1];await scanner.start(cam.id,{fps:10,qrbox:{width:260,height:120},aspectRatio:1.777},decoded=>{stopScanner();$('#barcodeInput').value=decoded;setStatus('Code détecté : '+decoded);lookupBarcode(decoded)},()=>{});setStatus('Caméra active : place le code-barres dans le cadre.')}catch(err){setStatus('Caméra indisponible : autorise l’accès à la caméra et vérifie que le site est en HTTPS. Tu peux saisir le code manuellement.');$('#scannerWrap').classList.add('hidden')}}
+async function stopScanner(){if(scanner){try{if(scanner.isScanning)await scanner.stop()}catch{} }$('#scannerWrap').classList.add('hidden')}
+$('#newFoodTop').onclick=()=>openFoodModal();$('#newFoodBtn').onclick=()=>openFoodModal();
+function openFoodModal(food=null){const f=food||{name:'',kcal:0,p:0,c:0,f:0,fiber:0,category:'Personnalisé',source:'Saisie personnelle',brand:'',id:'custom-'+Date.now()};$('#modalHost').innerHTML=`<div class="modal-backdrop" id="backdrop"><div class="modal"><div class="modal-top"><h2>${food?'Modifier un aliment':'Créer un aliment'}</h2><button class="secondary" id="closeModal">Fermer</button></div><p class="muted">Toutes les valeurs sont exprimées pour 100 g. Tu peux recopier l’étiquette.</p><label>Nom de l’aliment</label><input class="field" id="mfName" value="${safe(f.name)}" placeholder="Ex. : Yaourt nature"><div class="form-grid" style="margin-top:12px"><div><label>Calories (kcal)</label><input class="field" id="mfKcal" type="number" min="0" value="${f.kcal}"></div><div><label>Protéines (g)</label><input class="field" id="mfP" type="number" min="0" step=".1" value="${f.p}"></div><div><label>Glucides (g)</label><input class="field" id="mfC" type="number" min="0" step=".1" value="${f.c}"></div><div><label>Lipides (g)</label><input class="field" id="mfF" type="number" min="0" step=".1" value="${f.f}"></div><div><label>Fibres (g)</label><input class="field" id="mfFiber" type="number" min="0" step=".1" value="${f.fiber||0}"></div><div><label>Marque (facultatif)</label><input class="field" id="mfBrand" value="${safe(f.brand||'')}" placeholder="Marque"></div></div><button id="saveFoodModal" style="width:100%;margin-top:16px">Enregistrer l’aliment</button></div></div>`;
+$('#closeModal').onclick=()=>$('#modalHost').innerHTML='';$('#backdrop').addEventListener('click',e=>{if(e.target.id==='backdrop')$('#modalHost').innerHTML=''});$('#saveFoodModal').onclick=()=>{const name=$('#mfName').value.trim();if(!name){alert('Donne un nom à cet aliment.');return}const nf={...f,name,kcal:n($('#mfKcal').value),p:n($('#mfP').value),c:n($('#mfC').value),f:n($('#mfF').value),fiber:n($('#mfFiber').value),brand:$('#mfBrand').value.trim(),source:'Saisie personnelle'};const old=foods.findIndex(x=>x.id===f.id);if(old>=0)foods[old]=nf;else foods.unshift(nf);ingredients=ingredients.map(i=>i.food.id===nf.id?{...i,food:nf}:i);persist();renderIngredients();renderMyFoods();$('#modalHost').innerHTML='';$('#searchResults').innerHTML=foods.slice(0,8).map(foodCard).join('')}}
+$('#newFoodTop').addEventListener('click',()=>showTab('foods'));
+renderIngredients();renderSearchResults(foods.slice(0,8));renderRecipes();renderMyFoods();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
