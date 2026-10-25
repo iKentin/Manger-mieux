@@ -1,4 +1,4 @@
-const CACHE='manger-mieux-calendar-v2';
+const CACHE='manger-mieux-calendar-v5';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE))));
 self.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting()});
